@@ -1,0 +1,147 @@
+from tkinter import *
+import speech_recognition as sr
+import pyttsx3
+import pywhatkit
+import datetime
+import wikipedia
+import webbrowser
+
+
+main_window = Tk()
+main_window.title('voice command assistacne')
+main_window.geometry('500x550')
+
+bi= PhotoImage(file='icon.png')
+m_lab=Label(main_window,image=bi)
+m_lab.place(x=0,y=0,relwidth=1,relheight=1)
+
+
+
+listener = sr.Recognizer()  #recognize voice
+convert = pyttsx3.init()
+
+def speech(text):
+    convert.say(text)
+    convert.runAndWait()
+
+
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour >= 0 and hour < 12:
+        speech("Good Morning Sir !")
+
+    elif hour >= 12 and hour < 18:
+        speech("Good Afternoon Sir !")
+
+    else:
+        speech("Good Evening Sir !")
+
+
+    speech("This is Alex. I am your Assistant")
+    speech("What should i call you sir")
+    uname = take_command()
+    speech("Welcome Mister"+uname)
+    speech("How can i Help you, Sir")
+
+
+def take_command():
+    try:
+        with sr.Microphone() as source:  # collect voice data from using microphone
+            print('Ditecting voice...')
+            voice = listener.listen(source)
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            if 'alex' in command:
+                command = command.replace('alex', '')
+                print(command)
+                # speech(command)
+
+    except:
+        pass  # it will ignore or don't do anything when exception case occured
+    return command
+
+wishMe()
+
+
+
+def exe_alex():
+    command = take_command()
+    print(command)
+    if 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %p')
+        print('your local current time is ' + time)
+        speech('your local current time is' + time)
+
+    elif 'date' in command:
+        date = datetime.datetime.now().strftime('%A:%d %B,%Y')
+        print('Today is ' + date)
+        speech('Today is' + date)
+
+    elif 'what are you doing here' in command:
+        print('i am here for trying to reply your questions')
+        speech('i am here for trying to reply your questions')
+
+    elif 'how are you' in command:
+        print('I am feeling great')
+        speech('I am feeling great. And what about you?')
+
+
+
+    elif 'please play' in command:
+        song = command.replace('please play', '')
+        print('playing in youtube')
+        speech('playing' + song)
+        pywhatkit.playonyt(song)
+
+    elif 'play' in command:
+        song = command.replace('play', '')
+        print('playing in youtube')
+        speech('playing' + song)
+        pywhatkit.playonyt(song)
+
+
+
+    elif 'tell me about' in command:
+        prsn = command.replace('please tell me about', '')
+        info = wikipedia.summary(prsn, 2)
+        print(info)
+        speech(info)
+
+
+    elif 'are you know' in command:
+        kn = command.replace('are you know', '')
+        info1 = wikipedia.summary(kn, 2)
+        print(info1)
+        speech('yes i know' + info1)
+
+    elif"weather" in command:
+        speech("Here is the report\n")
+        webbrowser.open(command)
+
+    elif'temperature' in command:
+        speech('here is temperature')
+        webbrowser.open(command)
+
+    elif"exit" in command:
+        speech("I am very glad to talk with you")
+        exit()
+
+
+    elif 'who are you' in command:
+        print('My name is Alex and I am a virtual voice assistant')
+        speech('My name is alex and i am a virtual voice assistant')
+
+
+    else:
+        print('i do not understand you please tell me again')
+        speech('i do not understand you please tell me again')
+
+
+
+btn = Button(main_window, text= 'Run Alex',command=exe_alex).pack()
+
+btn1 = Button(main_window, text= 'Exit',command=main_window.quit).pack()
+
+
+
+main_window.mainloop()
